@@ -13,7 +13,7 @@ services:
       - ./wireguard:/config
       - /lib/modules:/lib/modules
     ports:
-      - 3000:3000
+      - 127.0.0.1:3000:3000
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
     restart: always
