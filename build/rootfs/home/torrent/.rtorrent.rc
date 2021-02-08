@@ -1,0 +1,118 @@
+# Instance layout (base paths)
+method.insert = cfg.basedir,  private|const|string, (cat,"/home/torrent/data/")
+method.insert = cfg.download, private|const|string, (cat,(cfg.basedir),"download/")
+method.insert = cfg.logs,     private|const|string, (cat,(cfg.basedir),"log/")
+method.insert = cfg.logfile,  private|const|string, (cat,(cfg.logs),"rtorrent-",(system.time),".log")
+method.insert = cfg.session,  private|const|string, (cat,(cfg.basedir),"session/")
+method.insert = cfg.watch,    private|const|string, (cat,(cfg.basedir),"watch/")
+
+# Create directories
+fs.mkdir.recursive = (cat,(cfg.basedir))
+
+fs.mkdir = (cat,(cfg.download))
+fs.mkdir = (cat,(cfg.logs))
+fs.mkdir = (cat,(cfg.session))
+
+fs.mkdir = (cat,(cfg.watch))
+fs.mkdir = (cat,(cfg.watch),"/load")
+fs.mkdir = (cat,(cfg.watch),"/start")
+
+# Basic operational settings (no need to change these)
+session.path.set = (cat, (cfg.session))
+directory.default.set = (cat, (cfg.download))
+log.execute = (cat, (cfg.logs), "execute.log")
+#log.xmlrpc = (cat, (cfg.logs), "xmlrpc.log")
+execute.nothrow = sh, -c, (cat, "echo >",\
+    (session.path), "rtorrent.pid", " ",(system.pid))
+
+# Other operational settings
+encoding.add = utf8
+system.cwd.set = (directory.default)
+network.http.dns_cache_timeout.set = 25
+pieces.hash.on_completion.set = no
+schedule2 = insufficient_disk_space, 1, 30, ((close_low_diskspace, 25000M))
+
+# Memory resource usage (increase if you have a large number of items loaded,
+# and/or the available resources to spend)
+pieces.memory.max.set = 1500M
+network.xmlrpc.size_limit.set = 16M
+
+# umask of finished files
+system.umask.set = 0027
+
+# Which ports rTorrent
+network.port_range.set = 55587-55587
+network.port_random.set = no
+
+# Disable DHT and PEX
+dht.mode.set = disable
+protocol.pex.set = no
+trackers.use_udp.set = no
+
+# Peer settings
+min_peers = 1
+max_peers = 100
+min_peers_seed = 1
+max_peers_seed = 50
+max_uploads = 15
+
+# Limits for file handle resources, this is optimized for
+# an `ulimit` of 1024 (a common default). You MUST leave
+# a ceiling of handles reserved for rTorrent's internal needs!
+network.max_open_files.set = 600
+network.max_open_sockets.set = 300
+
+# Enable encryption when possible
+protocol.encryption.set = allow_incoming,try_outgoing,enable_retry
+
+# SCGI port, XMLRPC settings
+scgi_local = /tmp/rtorrent.sock
+schedule = scgi_permission,0,0,"execute.nothrow=chmod,\"g+w,o=\",/tmp/rtorrent.sock"
+
+# gets the full path of data of a torrent (it's a workaround for the possibly empty 'd.base_path' attribute)
+method.insert = d.data_path, simple, "if=(d.is_multi_file), (cat,(d.directory),/), (cat,(d.directory),/,(d.name))"
+
+# Set an interface with IPv4 address to bind to:
+method.insert = cfg.interface.bind, string|const|private, (cat,"wg0")
+# Get IPv4 address of a given interface
+method.insert = get_interface_ipv4_address, simple|private, "execute.capture=bash,-c,\"$cat=\\\"echo -n \$(ip -o -4 addr show \\\",$argument.0=,\\\" | grep -Po 'inet \\\\\\\\\\K[\\\\\\\\\\d.]+')\\\"\""
+# The IP address the listening socket and outgoing connections is bound to. (bind)
+schedule2 = set_bind_address, 0, 0, \
+    "branch=((cfg.interface.bind)), \
+        ((network.bind_address.set,(get_interface_ipv4_address,(cfg.interface.bind))))"
+
+# Get public IP address without the need of having dynamic DNS service, also works from behind NAT, through tunnel
+method.insert = get_public_ip_address, simple|private, "execute.capture=bash,-c,\"eval echo -n $\(curl --silent http://checkip.amazonaws.com)\""
+
+# The IP address reported to the tracker. (ip) This handles dynamic IP's as well.
+schedule2 = ip_tick, 0, 4000, "network.local_address.set=(get_public_ip_address)"
+
+# Watch directories
+## Add torrent
+schedule2 = watch_load, 11, 10, ((load.verbose, (cat, (cfg.watch), "load/*.torrent")))
+## Add & download straight away
+schedule2 = watch_start, 10, 10, ((load.start_verbose, (cat, (cfg.watch), "start/*.torrent")))
+## Move added torrents (do NOT use this with watch folders!)
+#method.set_key = event.download.inserted_new,move_tor,"execute=mv,-u,$d.loaded_file=, (cat, (cfg.watch), "store/")"
+
+# Create symlinks in the watch directory with a suffix indicating the download state.
+method.set_key = event.download.resumed, link1,"d.create_link=tied,,.started"
+method.set_key = event.download.paused, link1,"d.delete_link=tied,,.started"
+method.set_key = event.download.finished, "d.create_link=tied,,.finished"
+method.set_key = event.download.erased, "d.delete_link=tied,,.finished"
+
+# Method to add the start time of the torrent
+method.set_key = event.download.inserted_new, !time_stamp, "d.custom.set=addtime,$cat=$system.time= ; d.save_resume="
+
+# Auto unrar
+method.set_key = event.download.finished,unrar, "execute={/usr/local/bin/rtunrar.sh,$d.base_path=}"
+
+## Logging:
+##   Levels = critical error warn notice info debug
+##   Groups = connection_* dht_* peer_* rpc_* storage_* thread_* tracker_* torrent_*
+print = (cat, "Logging to ", (cfg.logfile))
+log.open_file = "log", (cfg.logfile)
+log.add_output = "info", "log"
+#log.add_output = "tracker_debug", "log"
+
+### END of rtorrent.rc ###

@@ -1,0 +1,33 @@
+---
+version: "2.1"
+services:
+  wireguard:
+    image: linuxserver/wireguard
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - TZ=Europe/Berlin
+    volumes:
+      - ./wireguard:/config
+      - /lib/modules:/lib/modules
+    ports:
+      - 3000:3000
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: always
+
+  rtorrent-flood:
+    image: bitwrk/rtorrent-flood:latest
+    build:
+      context: ./build
+      dockerfile: Dockerfile
+    container_name: rtorrent-flood
+    environment:
+      - TZ=Europe/Berlin
+    volumes:
+      - ./data:/home/torrent/data
+      - ./flood:/flood
+    network_mode: service:wireguard
+    restart: unless-stopped

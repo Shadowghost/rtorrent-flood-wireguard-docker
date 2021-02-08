@@ -1,0 +1,7 @@
+# files
+docker-compose.override.yml
+
+# directories
+data/
+flood/
+wireguard/
