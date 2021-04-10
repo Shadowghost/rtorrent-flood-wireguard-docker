@@ -1,6 +1,6 @@
 # Arguments
-ARG FLOOD_VERSION=4.5
-ARG RTORRENT_VERSION=latest
+ARG FLOOD_VERSION=4.5.3
+ARG RTORRENT_VERSION=0.9.8-r9
 
 FROM jesec/rtorrent:$RTORRENT_VERSION as rtorrent
 
@@ -40,9 +40,9 @@ EXPOSE 3000 55587/udp
 
 # Label
 LABEL description="BitTorrent client with WebUI front-end" \
-      rtorrent="rTorrent BiTorrent client v0.9.8-r8" \
+      rtorrent="rTorrent BiTorrent client v0.9.8-r9" \
       mediainfo="MediaInfo v20.09" \
-      flood="Flood v4.5.x"
+      flood="Flood v4.5.3"
 
 # Flood with managed rTorrent daemon
 ENTRYPOINT ["run.sh"]
