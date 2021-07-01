@@ -23,7 +23,7 @@ services:
     build:
       context: ./build
       dockerfile: Dockerfile
-    container_name: rtorrent-flood
+    container_name: rtorrentflood
     environment:
       - TZ=Europe/Berlin
     volumes:

@@ -1,10 +1,10 @@
 # Arguments
-ARG FLOOD_VERSION=4.5.4
-ARG RTORRENT_VERSION=0.9.8-r13
+ARG FLOOD_VERSION=4.6.0
+ARG RTORRENT_VERSION=0.9.8-r14
 
-FROM jesec/rtorrent:$RTORRENT_VERSION as rtorrent
+FROM docker.io/jesec/rtorrent:$RTORRENT_VERSION as rtorrent
 
-FROM jesec/flood:$FLOOD_VERSION
+FROM docker.io/jesec/flood:$FLOOD_VERSION
 
 # Environment
 ENV HOME=/home/torrent
@@ -40,9 +40,9 @@ EXPOSE 3000 55587/udp
 
 # Label
 LABEL description="BitTorrent client with WebUI front-end" \
-      rtorrent="rTorrent BiTorrent client v0.9.8-r13" \
+      rtorrent="rTorrent BiTorrent client v0.9.8-r14" \
       mediainfo="MediaInfo v20.09" \
-      flood="Flood v4.5.4"
+      flood="Flood v4.6.0"
 
 # Flood with managed rTorrent daemon
 ENTRYPOINT ["run.sh"]
