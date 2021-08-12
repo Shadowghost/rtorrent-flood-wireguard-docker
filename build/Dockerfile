@@ -1,5 +1,5 @@
 # Arguments
-ARG FLOOD_VERSION=4.6.0
+ARG FLOOD_VERSION=4.6.1
 ARG RTORRENT_VERSION=0.9.8-r14
 
 FROM docker.io/jesec/rtorrent:$RTORRENT_VERSION as rtorrent
