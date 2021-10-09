@@ -37,6 +37,10 @@ schedule2 = insufficient_disk_space, 1, 30, ((close_low_diskspace, 25000M))
 pieces.memory.max.set = 1500M
 network.xmlrpc.size_limit.set = 16M
 
+# CURL options to add support for nonofficial SSL trackers and peers
+#network.http.ssl_verify_host.set = 0
+#network.http.ssl_verify_peer.set = 0
+
 # umask of finished files
 system.umask.set = 0027
 
