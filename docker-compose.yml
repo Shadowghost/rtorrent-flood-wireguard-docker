@@ -1,11 +1,12 @@
 ---
-version: "2.1"
+version: "3.9"
 services:
   wireguard:
     image: linuxserver/wireguard
     container_name: wireguard
     cap_add:
       - NET_ADMIN
+      - SYS_MODULE
     environment:
       - TZ=Europe/Berlin
     volumes:
@@ -15,6 +16,7 @@ services:
       - 127.0.0.1:3000:3000
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
     restart: always
 
   rtorrent-flood:

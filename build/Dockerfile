@@ -1,6 +1,6 @@
 # Arguments
 ARG FLOOD_VERSION=4.7.0
-ARG RTORRENT_VERSION=0.9.8-r15
+ARG RTORRENT_VERSION=0.9.8-r16
 
 FROM docker.io/jesec/rtorrent:$RTORRENT_VERSION as rtorrent
 
@@ -40,7 +40,7 @@ EXPOSE 3000 55587/udp
 
 # Label
 LABEL description="BitTorrent client with WebUI front-end" \
-      rtorrent="rTorrent BiTorrent client v0.9.8-r15" \
+      rtorrent="rTorrent BiTorrent client v0.9.8-r16" \
       mediainfo="MediaInfo v20.09" \
       flood="Flood v4.7.0"
 
