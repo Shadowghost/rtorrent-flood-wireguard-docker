@@ -5,17 +5,17 @@ method.insert = cfg.logs,     private|const|string, (cat,(cfg.basedir),"log/")
 method.insert = cfg.logfile,  private|const|string, (cat,(cfg.logs),"rtorrent-",(system.time),".log")
 method.insert = cfg.session,  private|const|string, (cat,(cfg.basedir),"session/")
 method.insert = cfg.watch,    private|const|string, (cat,(cfg.basedir),"watch/")
+method.insert = d.down.sequential,value|const,0
+method.insert = d.down.sequential.set,value|const,0
 
 # Create directories
-fs.mkdir.recursive = (cat,(cfg.basedir))
-
-fs.mkdir = (cat,(cfg.download))
-fs.mkdir = (cat,(cfg.logs))
-fs.mkdir = (cat,(cfg.session))
-
-fs.mkdir = (cat,(cfg.watch))
-fs.mkdir = (cat,(cfg.watch),"/load")
-fs.mkdir = (cat,(cfg.watch),"/start")
+execute.throw = bash, -c, (cat, "mkdir -p ", (cfg.basedir))
+execute.throw = bash, -c, (cat, "mkdir -p ", (cfg.download))
+execute.throw = bash, -c, (cat, "mkdir -p ", (cfg.logs))
+execute.throw = bash, -c, (cat, "mkdir -p ", (cfg.session))
+execute.throw = bash, -c, (cat, "mkdir -p ", (cfg.watch))
+execute.throw = bash, -c, (cat, "mkdir -p ", (cfg.watch), "/load")
+execute.throw = bash, -c, (cat, "mkdir -p ", (cfg.watch), "/start")
 
 # Basic operational settings (no need to change these)
 session.path.set = (cat, (cfg.session))
@@ -120,3 +120,4 @@ log.add_output = "info", "log"
 #log.add_output = "tracker_debug", "log"
 
 ### END of rtorrent.rc ###
+

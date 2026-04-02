@@ -1,5 +1,5 @@
 #!/bin/sh
 
-find ${HOME} -name rtorrent.lock -print0 | xargs -0 rm
+find ${HOME} -name rtorrent.lock -print0 | xargs -0 -r rm
 
 flood --host=0.0.0.0 --rtsocket /tmp/rtorrent.sock --rundir /flood --rtorrent

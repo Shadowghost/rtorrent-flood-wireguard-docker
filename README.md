@@ -1,12 +1,8 @@
-docker-compose project with [rtorrent](https://github.com/rakshasa/rtorrent), [flood](https://github.com/Flood-UI/flood) and [wireguard](https://www.wireguard.com/).
+docker-compose project with [rtorrent](https://github.com/rakshasa/rtorrent), [flood](https://github.com/jesec/flood) and [wireguard](https://www.wireguard.com/).
 
 ---
 
-Base for this project are the modified versions of rtorrent and flood by @jesec:
-* https://github.com/jesec/flood
-* https://github.com/jesec/rtorrent
-
-and the wireguard container by @linuxserver:
+This project utiliues the wireguard container by @linuxserver:
 * https://github.com/linuxserver/docker-wireguard
 
 ---
